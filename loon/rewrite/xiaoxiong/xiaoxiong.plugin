@@ -1,0 +1,10 @@
+#!name=小熊油耗去开屏
+#!desc=改写会员查询响应，去除开屏广告
+#!author=quietmodem
+#!homepage=https://github.com/quietmodem/scripts
+
+[Script]
+http-response ^https?:\/\/www\.xiaoxiongyouhao\.com\/api\/vip\/index\.php script-path=https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/loon/rewrite/xiaoxiong/js/xiaoxiong-vip.js, requires-body=true, tag=小熊油耗去开屏
+
+[MITM]
+hostname = www.xiaoxiongyouhao.com
