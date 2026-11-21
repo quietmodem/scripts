@@ -4,7 +4,7 @@
 
 ## 原理
 
-小熊油耗（包名 `com.momomobile.butterfly`，北京么么互联）的开屏广告由**穿山甲聚合（GroMore）**统一调度，穿山甲、快手、优量汇三家 SDK 竞价投放，广告主轮换。2026-11-21 用 Stream 两次抓包（第二次开 HTTPS 解密，含响应体）确认：
+小熊油耗（包名 `com.momomobile.butterfly`，北京么么互联）的开屏广告有**两条通道**：一是**自营推广**——App 用自家接口 `www.xiaoxiongyouhao.com/api/zytg.php` 下发、素材存自家 CDN `cdn.xiaoxiongyouhao.com/zytg/images/`（2026-11-21 QuanX 活动记录实锤：zytg.php 返回约 4KB 配置后，CDN 下载 113KB 素材）；二是**穿山甲聚合（GroMore）**调度穿山甲、快手、优量汇三家 SDK 竞价投放，广告主轮换。只堵 SDK 通道时自营通道照样出广告，这是本插件迭代多版才定位到的主通道。2026-11-21 用 Stream 两次抓包（第二次开 HTTPS 解密，含响应体）确认：
 
 - 启动先请求聚合配置 `api-access.pangolin-sdk-toutiao.com/api/ad/union/mediation/config/`，再经 `mediation/exchange/` 竞价，各家并行拉广告（穿山甲 `sdk/get_ads/`、快手 `rest/e/v3/open/univ` 等）；
 - 当次开屏是**快手投放的美团外卖广告**：素材图从快手 CDN `p66-ad.adkwai.com` 下载，已从抓包中提取原图核对；
@@ -12,6 +12,7 @@
 
 本插件的规则（全部在重写层，用 `reject-200` **即时空回**，不让 SDK 干等重试，避免开屏白屏——与虎扑插件不用 REJECT 干等的同一考虑）：
 
+0. 自营推广接口 `api/zytg.php` 与其素材路径 `cdn.xiaoxiongyouhao.com/zytg/` 即时空回（主通道，且只作用于小熊油耗本身）；
 1. 穿山甲配置请求按 URL 中的 `package_name=com.momomobile.butterfly` 精确拦截（只作用于小熊油耗）；
 2. 聚合配置与竞价交换（总开关）、穿山甲 `get_ads`、快手 `config`/`univ` 接口即时空回；
 3. 优量汇 SDK 接口（`mi.gdt.qq.com`、`sdk.e.qq.com`）即时空回；
