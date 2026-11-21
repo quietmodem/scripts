@@ -1,15 +1,18 @@
 #!name=小熊油耗去开屏广告
-#!desc=小熊油耗开屏广告由穿山甲/优量汇/快手三家 SDK 聚合投放，本插件拦其配置与拉广告域名，去除开屏广告
+#!desc=开屏由穿山甲聚合（GroMore）调度穿山甲/快手/优量汇三家投放；本插件对聚合配置与拉广告接口即时空回（reject-200），不干等、避免白屏；只影响广告，不影响任何 App 功能
 #!author=quietmodem
 #!homepage=https://github.com/quietmodem/scripts
 
-# 穿山甲（Pangle）配置请求（按包名 com.momomobile.butterfly 精确匹配，只作用于小熊油耗）
+# 穿山甲配置请求（按包名 com.momomobile.butterfly 精确匹配，只作用于小熊油耗）
 ^https?://webcast-open\.douyin\.com/webcast/openapi/pangle/setting/\?.*package_name=com\.momomobile\.butterfly url reject-200
 
-# 三家广告 SDK 的拉广告域名（聚合投放，缺一不可；均为纯广告域名，不承载 App 业务）
-host-keyword, pangolin-sdk, reject
-host, mi.gdt.qq.com, reject
-host, sdk.e.qq.com, reject
-host, open.e.kuaishou.com, reject
+# 聚合调度（GroMore）配置与竞价交换——聚合的总开关，断了三家都没广告
+^https?://api-access\.pangolin-sdk-toutiao[^/]*/api/ad/union/mediation/(config|exchange)/ url reject-200
 
-hostname = webcast-open.douyin.com
+# 穿山甲自家拉广告接口
+^https?://api-access\.pangolin-sdk-toutiao[^/]*/api/ad/union/sdk/get_ads/ url reject-200
+
+# 快手配置与拉广告接口（2026-11-21 实测：开屏的美团外卖广告即快手投放）
+^https?://open\.e\.kuaishou\.com/rest/e/v\d+/open/(config|univ) url reject-200
+
+hostname = webcast-open.douyin.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, open.e.kuaishou.com
