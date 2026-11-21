@@ -1,0 +1,9 @@
+#!name=小熊油耗VIP解锁（单测）
+#!desc=单测版：不含任何去广告规则，只保留 VIP 状态改写，用来验证开屏广告是否与 vip_state 有关；与 quietmodem/scripts 的小熊插件二选一启用
+#!author=quietmodem
+#!homepage=https://github.com/quietmodem/scripts
+
+# VIP 状态改写：借鉴 owl38383 的 Loon 插件（适配 QuanX），仅本地改写，与服务器真实会员无关，停用即恢复
+^https?://www\.xiaoxiongyouhao\.com/api/vip/index\.php url script-response-body https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewrite/xiaoxiong/js/xiaoxiong-vip.js
+
+hostname = www.xiaoxiongyouhao.com
