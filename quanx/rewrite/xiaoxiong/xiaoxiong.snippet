@@ -10,11 +10,8 @@
 # 穿山甲配置请求（按包名 com.momomobile.butterfly 精确匹配，只作用于小熊油耗）
 ^https?://webcast-open\.douyin\.com/webcast/openapi/pangle/setting/\?.*package_name=com\.momomobile\.butterfly url reject-200
 
-# 聚合调度（GroMore）配置与竞价交换——聚合的总开关，断了三家都没广告
-^https?://api-access\.pangolin-sdk-toutiao[^/]*/api/ad/union/mediation/(config|exchange)/ url reject-200
-
-# 穿山甲自家拉广告接口
-^https?://api-access\.pangolin-sdk-toutiao[^/]*/api/ad/union/sdk/get_ads/ url reject-200
+# 穿山甲 SDK 全域名族一刀切：聚合调度/竞价/拉广告/日志等所有接口（含 gromore 与 -b、1 等备用域名轮换）——该域名族只有广告 SDK 在用，无任何用户功能
+^https?://[^/]*pangolin-sdk-toutiao[^/]*/ url reject-200
 
 # 快手配置与拉广告接口（2026-11-21 实测：开屏的美团外卖广告即快手投放）
 ^https?://open\.e\.kuaishou\.com/rest/e/v\d+/open/(config|univ) url reject-200
@@ -34,4 +31,4 @@
 ^https?://[^/]*webcastcdn-tos-sign\.douyinstatic\.com/ url reject-200
 ^https?://[^/]*\.yximgs\.com/ url reject-200
 
-hostname = www.xiaoxiongyouhao.com, cdn.xiaoxiongyouhao.com, webcast-open.douyin.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, open.e.kuaishou.com, mi.gdt.qq.com, sdk.e.qq.com, *.pglstatp-toutiao.com, lf-cdn-tos.bytescm.com, *.adkwai.com, *.adukwai.com, pgdt.ugdtimg.com, *.douyinpic.com, *.douyinstatic.com, *.yximgs.com
+hostname = www.xiaoxiongyouhao.com, cdn.xiaoxiongyouhao.com, webcast-open.douyin.com, *.pangolin-sdk-toutiao.com, *.pangolin-sdk-toutiao1.com, *.pangolin-sdk-toutiao-b.com, open.e.kuaishou.com, mi.gdt.qq.com, sdk.e.qq.com, *.pglstatp-toutiao.com, lf-cdn-tos.bytescm.com, *.adkwai.com, *.adukwai.com, pgdt.ugdtimg.com, *.douyinpic.com, *.douyinstatic.com, *.yximgs.com
