@@ -20,7 +20,7 @@ https://webcast-open.douyin.com/webcast/openapi/pangle/setting/?app_id=374059&pa
 https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewrite/xiaoxiong/xiaoxiong.snippet
 ```
 
-并确认 MITM 已启用、主机名包含 `webcast-open.douyin.com`（QuanX 需要解密该域名才能看到完整 URL 并匹配参数）。
+并确认 MITM 已启用（snippet 末尾已带 `hostname = webcast-open.douyin.com`，QuanX 需要解密该域名才能看到完整 URL 并匹配参数）。
 
 ## 验证
 
