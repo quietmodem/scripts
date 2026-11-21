@@ -1,0 +1,10 @@
+#!name=小熊油耗去开屏广告
+#!desc=拦截小熊油耗内嵌穿山甲（Pangle）SDK 的配置请求（按包名 com.momomobile.butterfly 精确匹配，只作用于小熊油耗），去除开屏广告
+#!author=quietmodem
+#!homepage=https://github.com/quietmodem/scripts
+
+[rewrite_local]
+^https?://webcast-open\.douyin\.com/webcast/openapi/pangle/setting/\?.*package_name=com\.momomobile\.butterfly url reject-200
+
+[mitm]
+hostname = webcast-open.douyin.com
