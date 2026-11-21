@@ -1,50 +1,19 @@
-# 小熊油耗去开屏广告（Quantumult X）
+# 小熊油耗去开屏（VIP 解锁）
 
-去除小熊油耗 iOS 版的开屏广告。
+小熊油耗（包名 `com.momomobile.butterfly`，北京么么互联）的开屏广告受**会员状态字段 `vip_state` 门控**：App 在启动时查询会员状态，当 `vip_state` 为 2 时不再加载任何开屏广告。本插件拦截会员查询接口 `/api/vip/index.php?a=query_membership` 的响应，把 `vip_state` 改写为 2（脚本在 `js/xiaoxiong-vip.js`），开屏随之消失——没有拦截、没有等待、没有白屏，也不影响任何其他 App。
 
-## 原理
+机制借鉴 [owl38383](https://github.com/owl38383) 的 Loon 插件（其 `cdn.io` 仓库 `Loon/xiaoxiongyouhao`），此处适配为 Quantumult X 的 `script-response-body` 形式。
 
-小熊油耗（包名 `com.momomobile.butterfly`，北京么么互联）的开屏广告有**两条通道**：一是**自营推广**——App 用自家接口 `www.xiaoxiongyouhao.com/api/zytg.php` 下发、素材存自家 CDN `cdn.xiaoxiongyouhao.com/zytg/images/`（2026-11-21 QuanX 活动记录实锤：zytg.php 返回约 4KB 配置后，CDN 下载 113KB 素材）；二是**穿山甲聚合（GroMore）**调度穿山甲、快手、优量汇三家 SDK 竞价投放，广告主轮换。只堵 SDK 通道时自营通道照样出广告，这是本插件迭代多版才定位到的主通道。2026-11-21 用 Stream 两次抓包（第二次开 HTTPS 解密，含响应体）确认：
+## 背景（为什么不用拦截规则）
 
-- 启动先请求聚合配置 `api-access.pangolin-sdk-toutiao.com/api/ad/union/mediation/config/`，再经 `mediation/exchange/` 竞价，各家并行拉广告（穿山甲 `sdk/get_ads/`、快手 `rest/e/v3/open/univ` 等）；
-- 当次开屏是**快手投放的美团外卖广告**：素材图从快手 CDN `p66-ad.adkwai.com` 下载，已从抓包中提取原图核对；
-- 优量汇在该次抓包中未见独立的拉广告请求，但其素材域名 `pgdt.ugdtimg.com` 在开屏时段有连接，疑似经聚合交换下发填充；且后续实测发现穿山甲/快手接口已被分流清单在 DNS 层拦截时开屏仍出现，故 v5 起将优量汇 SDK 域名（`mi.gdt.qq.com`、`sdk.e.qq.com`）一并纳入拦截。
+开屏实际有两条投放通道：小熊自营推广（自家接口 `api/zytg.php` 下发、素材存自家 CDN）与穿山甲聚合 GroMore 调度的穿山甲/快手/优量汇三家 SDK。2026-11-21 曾逐条定位并拦截全部通道（zytg 接口、聚合配置、三家 SDK 接口与六个素材 CDN），QuanX 活动记录确认广告请求已全数被拦，但因 SDK 域名轮换与本地缓存，开屏仍偶有漏出。最终通过对照实验确认：单独改写 `vip_state` 即可让 App 完全不加载开屏，两条通道都不再触发。早期的拦截规则版保存在本仓库 git 历史中（v9，提交 `2218207`），如 App 改版使本方法失效，可从中恢复继续维护。
 
-本插件的规则（全部在重写层，用 `reject-200` **即时空回**，不让 SDK 干等重试，避免开屏白屏——与虎扑插件不用 REJECT 干等的同一考虑）：
+## 使用
 
-0. 自营推广接口 `api/zytg.php` 与其素材路径 `cdn.xiaoxiongyouhao.com/zytg/` 即时空回（主通道，且只作用于小熊油耗本身）；
-1. 穿山甲配置请求按 URL 中的 `package_name=com.momomobile.butterfly` 精确拦截（只作用于小熊油耗）；
-2. 聚合配置与竞价交换（总开关）、穿山甲 `get_ads`、快手 `config`/`univ` 接口即时空回；
-3. 优量汇 SDK 接口（`mi.gdt.qq.com`、`sdk.e.qq.com`）即时空回；
-4. 素材层兜底：穿山甲素材/试玩组件、快手与优量汇的广告素材 CDN、字节签名图床的广告桶路径（`*.douyinpic.com/tos-cn-p-*`，多次开屏素材实从此处直连下载）、快手图床 `*.yximgs.com` 一并即时空回。注意：`*.yximgs.com` 同时是快手 App 的图片 CDN，若使用快手 App 且图片加载异常，删掉这一行即可——SDK 会在上一次运行时预取下一次的广告素材（抓包中开屏播出后仍在下载滴滴素材与试玩包），只断接口时缓存素材仍能播一两次，这层是给缓存兜底的。
+在 Quantumult X 中添加本 snippet 为远程重写资源即可，无需删除重装 App、无需清缓存。
 
-影响范围：QuanX 规则无法按 App 区分，第 2 组规则对其它使用穿山甲聚合/快手广告 SDK 的 App 同样生效，但**只影响广告投放，不影响任何 App 的功能与数据**；其它 App 里"看广告领奖励"的激励视频可能因此加载不出来，遇到时把对应规则删掉即可。v2 曾用域名级全局 REJECT，因影响面大且连接被掐断会引发 SDK 重试干等，已弃用。
+## 注意
 
-## 安装
-
-在 Quantumult X 中添加远程重写，地址：
-
-```
-https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewrite/xiaoxiong/xiaoxiong.snippet
-```
-
-并确认 MITM 已启用（snippet 末尾已带所需 `hostname`）。
-
-## 验证
-
-添加后彻底关闭小熊油耗再重新打开，反复冷启动几次：
-
-- 开屏广告不再出现、且启动不白屏干等 = 生效。注意：SDK 会把素材（包括整套试玩广告包）缓存在 App 数据里，换规则后先**删除 App 重装**清掉存量，再测第一次启动；不清缓存时旧素材仍可能播一两次
-- 若某次开屏换成优量汇投放且仍出现，需要再抓一次包定位优量汇的拉广告接口
-
-## 说明
-
-- 仅去除开屏广告，不修改 App 任何业务数据（油耗记录、排行等接口不在拦截范围内）
-- 小熊油耗更新版本后若更换广告 SDK 或聚合方式，本规则可能失效，需要重新抓包定位
-
-## 实验性：VIP 状态改写
-
-借鉴 [owl38383](https://github.com/owl38383) 的 Loon 插件（其 `cdn.io` 仓库 `Loon/xiaoxiongyouhao`），适配 Quantumult X：拦截会员查询接口 `/api/vip/index.php` 的响应，把 `vip_state` 改为 2（脚本在 `js/xiaoxiong-vip.js`），用于验证开屏广告是否与会员状态字段有关。注意：
-
-- 这只是本地改写，服务器上的真实会员状态不受影响，删掉 snippet 中对应的那条规则即停用；
-- 截至 v9 加入时，没有证据表明小熊的开屏广告与 VIP 状态有关（真实 VIP 用户同样有开屏，官方 VIP 权益也不含去广告），此项纯属排除性实验，结论以实测为准。
+- 改写只发生在本地，服务器上的真实会员状态、有效期均不受影响；停用或删除本资源即恢复原状。
+- 改写同时会让 App 按 VIP 状态呈现（会员功能解锁是同一机制的附带效果）。
+- 若小熊改版后 `vip_state` 的语义变化，本方法可能失效，届时参考 git 历史中的拦截规则版。
