@@ -1,5 +1,5 @@
 #!name=小熊油耗去开屏广告
-#!desc=开屏由穿山甲聚合（GroMore）调度穿山甲/快手/优量汇三家投放；本插件对聚合配置、拉广告接口与广告素材即时空回（reject-200），不干等、避免白屏；只影响广告，不影响任何 App 功能
+#!desc=开屏由穿山甲聚合（GroMore）调度穿山甲/快手/优量汇三家投放；本插件对聚合配置、三家拉广告接口与广告素材即时空回（reject-200），不干等、避免白屏；只影响广告，不影响任何 App 功能
 #!author=quietmodem
 #!homepage=https://github.com/quietmodem/scripts
 
@@ -15,6 +15,10 @@
 # 快手配置与拉广告接口（2026-11-21 实测：开屏的美团外卖广告即快手投放）
 ^https?://open\.e\.kuaishou\.com/rest/e/v\d+/open/(config|univ) url reject-200
 
+# 优量汇（腾讯）SDK 接口（其素材域名 pgdt.ugdtimg.com 在开屏时段有连接，填充疑经聚合交换下发）
+^https?://mi\.gdt\.qq\.com/ url reject-200
+^https?://sdk\.e\.qq\.com/ url reject-200
+
 # 广告素材层（第二道防线：即便某次决策漏过，素材也下不下来、渲染不出来）
 ^https?://[^/]*\.pglstatp-toutiao\.com/(obj/ad-pattern/|ad\.union\.api/|ad-app-package/) url reject-200
 ^https?://lf-cdn-tos\.bytescm\.com/obj/static/ad/ url reject-200
@@ -22,4 +26,4 @@
 ^https?://[^/]*adukwai\.com/ url reject-200
 ^https?://pgdt\.ugdtimg\.com/ url reject-200
 
-hostname = webcast-open.douyin.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, open.e.kuaishou.com, *.pglstatp-toutiao.com, lf-cdn-tos.bytescm.com, *.adkwai.com, *.adukwai.com, pgdt.ugdtimg.com
+hostname = webcast-open.douyin.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, open.e.kuaishou.com, mi.gdt.qq.com, sdk.e.qq.com, *.pglstatp-toutiao.com, lf-cdn-tos.bytescm.com, *.adkwai.com, *.adukwai.com, pgdt.ugdtimg.com
