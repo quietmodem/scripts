@@ -41,3 +41,10 @@ https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewri
 
 - 仅去除开屏广告，不修改 App 任何业务数据（油耗记录、排行等接口不在拦截范围内）
 - 小熊油耗更新版本后若更换广告 SDK 或聚合方式，本规则可能失效，需要重新抓包定位
+
+## 实验性：VIP 状态改写
+
+借鉴 [owl38383](https://github.com/owl38383) 的 Loon 插件（其 `cdn.io` 仓库 `Loon/xiaoxiongyouhao`），适配 Quantumult X：拦截会员查询接口 `/api/vip/index.php` 的响应，把 `vip_state` 改为 2（脚本在 `js/xiaoxiong-vip.js`），用于验证开屏广告是否与会员状态字段有关。注意：
+
+- 这只是本地改写，服务器上的真实会员状态不受影响，删掉 snippet 中对应的那条规则即停用；
+- 截至 v9 加入时，没有证据表明小熊的开屏广告与 VIP 状态有关（真实 VIP 用户同样有开屏，官方 VIP 权益也不含去广告），此项纯属排除性实验，结论以实测为准。

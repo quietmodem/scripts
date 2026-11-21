@@ -31,4 +31,7 @@
 ^https?://[^/]*webcastcdn-tos-sign\.douyinstatic\.com/ url reject-200
 ^https?://[^/]*\.yximgs\.com/ url reject-200
 
+# 【实验】VIP 状态改写：借鉴 owl38383 的 Loon 插件（适配 QuanX），验证开屏是否与 vip_state 有关；仅本地改写，与服务器真实会员无关，删掉本条即停用
+^https?://www\.xiaoxiongyouhao\.com/api/vip/index\.php url script-response-body https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewrite/xiaoxiong/js/xiaoxiong-vip.js
+
 hostname = www.xiaoxiongyouhao.com, cdn.xiaoxiongyouhao.com, webcast-open.douyin.com, *.pangolin-sdk-toutiao.com, *.pangolin-sdk-toutiao1.com, *.pangolin-sdk-toutiao-b.com, open.e.kuaishou.com, mi.gdt.qq.com, sdk.e.qq.com, *.pglstatp-toutiao.com, lf-cdn-tos.bytescm.com, *.adkwai.com, *.adukwai.com, pgdt.ugdtimg.com, *.douyinpic.com, *.douyinstatic.com, *.yximgs.com
