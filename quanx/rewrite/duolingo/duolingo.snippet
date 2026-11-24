@@ -1,0 +1,11 @@
+#!name=Duolingo Max 解锁
+#!desc=改写用户数据响应，本地解锁 Duolingo Max（无限体力、去广告、视频通话入口等）
+#!author=quietmodem
+#!homepage=https://github.com/quietmodem/scripts
+
+# 来源：原作者 Takagivegeta，https://github.com/TAKAGIVEGETA/MyScripts/tree/main/lingoDuo
+# 本版为 Quantumult X 移植：核心脚本逻辑未改动，仅自托管脚本文件；
+# QuanX 无插件参数机制，上游的经验加倍/解锁全部关卡为 Loon 版独有（同仓库 loon/rewrite/duolingo），本版默认关闭。
+^https?:\/\/(ios-api-[a-z0-9-]+|api\d+)\.duolingo\.c(n|om)\/2023-05-23\/(batch|users\/[^\/?#]+)(?:[?#]|$) url script-response-body https://raw.githubusercontent.com/quietmodem/scripts/refs/heads/main/quanx/rewrite/duolingo/js/duolingo-max.js
+
+hostname = ios-api-*.duolingo.com, ios-api-*.duolingo.cn, api*.duolingo.com, api*.duolingo.cn
